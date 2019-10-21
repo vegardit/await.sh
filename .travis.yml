@@ -1,0 +1,41 @@
+language: minimal
+
+sudo: false
+
+addons:
+  apt:
+    packages:
+      - ash
+      - busybox-static
+      - parallel
+      - ksh
+      - zsh
+
+os:
+  - linux
+  - osx
+
+matrix:
+  fast_finish: true
+  allow_failures:
+    - os: osx
+  exclude:
+    - env: TEST_SHELL="busybox sh"
+      os: osx
+    - env: TEST_SHELL="dash"
+      os: osx
+
+env:
+  - TEST_SHELL="sh"
+  - TEST_SHELL="bash"
+  - TEST_SHELL="busybox sh"
+  - TEST_SHELL="dash"
+  - TEST_SHELL="ksh"
+  - TEST_SHELL="zsh"
+
+before_script:
+  - git clone https://github.com/bats-core/bats-core.git /tmp/bats-repo
+  - bash /tmp/bats-repo/install.sh /tmp/bats
+
+script:
+  - bash tests/test-all-travis.sh

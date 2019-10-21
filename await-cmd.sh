@@ -42,7 +42,7 @@ show_help() {
 }
 
 assert_command_exists() {
-  if ! command -v $1 >/dev/null; then
+  if ! command -v "$1" >/dev/null; then
     echo "ERROR: Required command '$1' not found"'!' >&2
     exit $rc_cmd_not_found
   fi
@@ -93,7 +93,7 @@ while [ $# -gt 0 ]; do
   case $1 in
     -f) force_execution=true ;;
     -t) shift
-        if ! is_integer $1; then
+        if ! is_integer "$1"; then
           show_help >&2
           echo >&2
           echo 'ERROR: Option -t must be followed by an integer!' >&2
@@ -102,7 +102,7 @@ while [ $# -gt 0 ]; do
         probe_timeout=$1 && shift
         ;;
     -w) shift
-        if ! is_integer $1; then
+        if ! is_integer "$1"; then
           show_help >&2
           echo >&2
           echo 'ERROR: Option -w must be followed by an integer!' >&2
@@ -122,7 +122,7 @@ if [ $# -lt 2 ]; then
 fi
 
 deadline=$1 && shift
-if ! is_integer $deadline; then
+if ! is_integer "$deadline"; then
   show_help >&2
   echo >&2
   echo 'ERROR: DEADLINE parameter must be an integer!' >&2
@@ -130,7 +130,7 @@ if ! is_integer $deadline; then
 fi
 
 test_command=$1 && shift
-assert_command_exists $test_command
+assert_command_exists "$test_command"
 
 # collect parameters of test command
 while [ $# -gt 0 ]; do
@@ -173,19 +173,21 @@ fi
 # waiting for condition
 ##############################
 echo "Waiting up to $deadline seconds for [$test_command] to get ready..."
-wait_until=$(( $(date +%s) + $deadline ))
-timeout_cmd=$(build_timeout_command $probe_timeout)
+wait_until=$(( $(date +%s) + deadline ))
+timeout_cmd=$(build_timeout_command "$probe_timeout")
 while true; do
   set +e
-  echo "-> executing [$timeout_cmd $test_command]..."
+  echo "=> executing [$timeout_cmd $test_command]..."
+  # shellcheck disable=SC2086
   result=$(eval $timeout_cmd $test_command 2>&1)
+  # shellcheck disable=SC2181
   if [ $? -eq 0 ]; then
      set -e
      break
   fi
   set -e
 
-  if [ $(date +%s) -ge $wait_until ]; then
+  if [ "$(date +%s)" -ge $wait_until ]; then
     echo "$result" >&2
     echo >&2
     echo "ERROR: [$test_command] did not get ready within required time." >&2
@@ -195,7 +197,7 @@ while true; do
       exit $rc_timed_out
     fi
   fi
-  sleep $retry_interval
+  sleep "$retry_interval"
 done
 echo "SUCCESS: Waiting condition is met."
 
@@ -205,5 +207,6 @@ echo "SUCCESS: Waiting condition is met."
 ##############################
 if [ -n "$command" ]; then
   echo "Executing [$command]..."
+  # shellcheck disable=SC2086
   eval $command
 fi

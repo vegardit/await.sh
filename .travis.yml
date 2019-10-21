@@ -55,4 +55,5 @@ before_script:
   - bash /tmp/bats-repo/install.sh /tmp/bats
 
 script:
+  - if command -v shellcheck >/dev/null; then echo "Running [shellcheck]..."; shellcheck await-*.sh; fi
   - bash tests/test-all-travis.sh

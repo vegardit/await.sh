@@ -43,7 +43,7 @@ show_help() {
 }
 
 assert_command_exists() {
-  if ! command -v $1 >/dev/null; then
+  if ! command -v "$1" >/dev/null; then
     echo "ERROR: Required command '$1' not found"'!' >&2
     exit $rc_cmd_not_found
   fi
@@ -99,7 +99,7 @@ build_wget_command() {
     _wget_cmd="${_wget_cmd} -S"
   fi
 
-  echo ${_wget_cmd}
+  echo "${_wget_cmd}"
 }
 
 
@@ -123,7 +123,7 @@ while [ $# -gt 0 ]; do
   case $1 in
     -f) force_execution=true ;;
     -t) shift
-        if ! is_integer $1; then
+        if ! is_integer "$1"; then
           show_help >&2
           echo >&2
           echo 'ERROR: Option -t must be followed by an integer!' >&2
@@ -132,7 +132,7 @@ while [ $# -gt 0 ]; do
         probe_timeout=$1 && shift
         ;;
     -w) shift
-        if ! is_integer $1; then
+        if ! is_integer "$1"; then
           show_help >&2
           echo >&2
           echo 'ERROR: Option -w must be followed by an integer!' >&2
@@ -152,7 +152,7 @@ if [ $# -lt 2 ]; then
 fi
 
 deadline=$1 && shift
-if ! is_integer $deadline; then
+if ! is_integer "$deadline"; then
   show_help >&2
   echo >&2
   echo 'ERROR: DEADLINE parameter must be an integer!' >&2
@@ -198,8 +198,8 @@ fi
 # waiting for condition
 ##############################
 echo "Waiting up to $deadline seconds for [$targets] to get ready..."
-wait_until=$(( $(date +%s) + $deadline ))
-timeout_cmd=$(build_timeout_command $probe_timeout)
+wait_until=$(( $(date +%s) + deadline ))
+timeout_cmd=$(build_timeout_command "$probe_timeout")
 wget_cmd=$(build_wget_command)
 while true; do
   no_errors=true
@@ -207,8 +207,10 @@ while true; do
   last_error_target=
   for target in $targets; do
     set +e
-    echo "-> executing [$timeout_cmd $wget_cmd $target]..."
-    result=$(eval $timeout_cmd $wget_cmd $target 2>&1)
+    echo "=> executing [$timeout_cmd $wget_cmd $target]..."
+    # shellcheck disable=SC2086
+    result=$(eval $timeout_cmd $wget_cmd "$target" 2>&1)
+    # shellcheck disable=SC2181
     if [ $? -ne 0 ]; then
       no_errors=false
       last_error_msg=$result
@@ -229,7 +231,7 @@ while true; do
        ;;
   esac
 
-  if [ $(date +%s) -ge $wait_until ]; then
+  if [ "$(date +%s)" -ge $wait_until ]; then
     echo "$last_error_msg" >&2
     echo >&2
     echo "ERROR: [$last_error_target] did not get ready within required time." >&2
@@ -239,7 +241,7 @@ while true; do
       exit $rc_timed_out
     fi
   fi
-  sleep $retry_interval
+  sleep "$retry_interval"
 done
 echo "SUCCESS: Waiting condition is met."
 
@@ -249,5 +251,6 @@ echo "SUCCESS: Waiting condition is met."
 ##############################
 if [ -n "$command" ]; then
   echo "Executing [$command]..."
+  # shellcheck disable=SC2086
   eval $command
 fi

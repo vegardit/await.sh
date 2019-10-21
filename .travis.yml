@@ -1,3 +1,4 @@
+# https://github.com/travis-ci/travis-yml/blob/master/schema.json
 language: minimal
 
 sudo: false
@@ -11,27 +12,43 @@ addons:
       - ksh
       - zsh
 
-os:
-  - linux
-  - osx
 
-matrix:
+# https://docs.travis-ci.com/user/build-matrix/
+
+jobs:
   fast_finish: true
   allow_failures:
     - os: osx
-  exclude:
-    - env: TEST_SHELL="busybox sh"
-      os: osx
-    - env: TEST_SHELL="dash"
-      os: osx
-
-env:
-  - TEST_SHELL="sh"
-  - TEST_SHELL="bash"
-  - TEST_SHELL="busybox sh"
-  - TEST_SHELL="dash"
-  - TEST_SHELL="ksh"
-  - TEST_SHELL="zsh"
+  include:
+    # https://docs.travis-ci.com/user/reference/overview/
+    - {os: linux, dist: bionic,  env: [OS_LABEL="Ubuntu 18.04", TEST_SHELL="bash"]}
+    - {os: linux, dist: bionic,  env: [OS_LABEL="Ubuntu 18.04", TEST_SHELL="busybox sh"]}
+    - {os: linux, dist: bionic,  env: [OS_LABEL="Ubuntu 18.04", TEST_SHELL="dash"]}
+    - {os: linux, dist: bionic,  env: [OS_LABEL="Ubuntu 18.04", TEST_SHELL="sh"]}
+    - {os: linux, dist: bionic,  env: [OS_LABEL="Ubuntu 18.04", TEST_SHELL="ksh"]}
+    - {os: linux, dist: bionic,  env: [OS_LABEL="Ubuntu 18.04", TEST_SHELL="zsh"]}
+    - {os: linux, dist: xenial,  env: [OS_LABEL="Ubuntu 16.04", TEST_SHELL="bash"]}
+    - {os: linux, dist: xenial,  env: [OS_LABEL="Ubuntu 16.04", TEST_SHELL="busybox sh"]}
+    - {os: linux, dist: xenial,  env: [OS_LABEL="Ubuntu 16.04", TEST_SHELL="dash"]}
+    - {os: linux, dist: xenial,  env: [OS_LABEL="Ubuntu 16.04", TEST_SHELL="sh"]}
+    - {os: linux, dist: xenial,  env: [OS_LABEL="Ubuntu 16.04", TEST_SHELL="ksh"]}
+    - {os: linux, dist: xenial,  env: [OS_LABEL="Ubuntu 16.04", TEST_SHELL="zsh"]}
+    - {os: linux, dist: trusty,  env: [OS_LABEL="Ubuntu 14.04", TEST_SHELL="bash"]}
+    - {os: linux, dist: trusty,  env: [OS_LABEL="Ubuntu 14.04", TEST_SHELL="busybox sh"]}
+    - {os: linux, dist: trusty,  env: [OS_LABEL="Ubuntu 14.04", TEST_SHELL="dash"]}
+    - {os: linux, dist: trusty,  env: [OS_LABEL="Ubuntu 14.04", TEST_SHELL="sh"]}
+    - {os: linux, dist: trusty,  env: [OS_LABEL="Ubuntu 14.04", TEST_SHELL="ksh"]}
+    - {os: linux, dist: trusty,  env: [OS_LABEL="Ubuntu 14.04", TEST_SHELL="zsh"]}
+    - {os: linux, dist: precise, env: [OS_LABEL="Ubuntu 12.04", TEST_SHELL="bash"]}
+    - {os: linux, dist: precise, env: [OS_LABEL="Ubuntu 12.04", TEST_SHELL="busybox sh"]}
+    - {os: linux, dist: precise, env: [OS_LABEL="Ubuntu 12.04", TEST_SHELL="dash"]}
+    - {os: linux, dist: precise, env: [OS_LABEL="Ubuntu 12.04", TEST_SHELL="sh"]}
+    - {os: linux, dist: precise, env: [OS_LABEL="Ubuntu 12.04", TEST_SHELL="ksh"]}
+    - {os: linux, dist: precise, env: [OS_LABEL="Ubuntu 12.04", TEST_SHELL="zsh"]}
+    - {os: osx, env: [TEST_SHELL="bash"]}
+    - {os: osx, env: [TEST_SHELL="sh"]}
+    - {os: osx, env: [TEST_SHELL="ksh"]}
+    - {os: osx, env: [TEST_SHELL="zsh"]}
 
 before_script:
   - git clone https://github.com/bats-core/bats-core.git /tmp/bats-repo

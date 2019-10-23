@@ -19,6 +19,7 @@ jobs:
   fast_finish: true
   allow_failures:
     - os: osx
+    - os: windows
   include:
     # https://docs.travis-ci.com/user/reference/overview/
     - {os: linux, dist: bionic,  env: [OS_LABEL="Ubuntu 18.04", TEST_SHELL="bash"]}
@@ -49,6 +50,7 @@ jobs:
     - {os: osx, env: [TEST_SHELL="sh"]}
     - {os: osx, env: [TEST_SHELL="ksh"]}
     - {os: osx, env: [TEST_SHELL="zsh"]}
+    - {os: windows, env: [TEST_SHELL="bash"]}
 
 before_script:
   - git clone https://github.com/bats-core/bats-core.git /tmp/bats-repo

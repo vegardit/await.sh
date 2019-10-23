@@ -121,7 +121,9 @@ probe_timeout=10
 # option parsing
 while [ $# -gt 0 ]; do
   case $1 in
-    -f) force_execution=true ;;
+    -f) shift
+        force_execution=true
+        ;;
     -t) shift
         if ! is_integer "$1"; then
           show_help >&2
@@ -155,7 +157,7 @@ deadline=$1 && shift
 if ! is_integer "$deadline"; then
   show_help >&2
   echo >&2
-  echo 'ERROR: DEADLINE parameter must be an integer!' >&2
+  echo 'ERROR: TIMEOUT parameter must be an integer!' >&2
   exit $rc_invalid_args
 fi
 

@@ -55,11 +55,11 @@ test_with() {
 }
 
 
-@test "${TEST_SHELL:-sh}: Test missing DEADLINE parameter" {
+@test "${TEST_SHELL:-sh}: Test missing TIMEOUT parameter" {
   test_with $rc_invalid_args true -- echo UP
 
   [[ $output != *"UP"* ]]
-  [[ $output == *"ERROR: DEADLINE parameter must be an integer"* ]]
+  [[ $output == *"ERROR: TIMEOUT parameter must be an integer"* ]]
 }
 
 

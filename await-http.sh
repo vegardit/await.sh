@@ -208,15 +208,18 @@ while true; do
   last_error_msg=
   last_error_target=
   for target in $targets; do
+    printf "=> executing [$timeout_cmd $wget_cmd $target]..."
     set +e
-    echo "=> executing [$timeout_cmd $wget_cmd $target]..."
     # shellcheck disable=SC2086
     result=$(eval $timeout_cmd $wget_cmd "$target" 2>&1)
     # shellcheck disable=SC2181
     if [ $? -ne 0 ]; then
+      echo "ERROR"
       no_errors=false
       last_error_msg=$result
       last_error_target=$target
+    else
+      echo "OK"
     fi
     set -e
   done

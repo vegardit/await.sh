@@ -179,13 +179,16 @@ wait_until=$(( $(date +%s) + deadline ))
 timeout_cmd=$(build_timeout_command "$probe_timeout")
 while true; do
   set +e
-  echo "=> executing [$timeout_cmd $test_command]..."
+  printf "=> executing [$timeout_cmd $test_command]..."
   # shellcheck disable=SC2086
   result=$(eval $timeout_cmd $test_command 2>&1)
   # shellcheck disable=SC2181
   if [ $? -eq 0 ]; then
-     set -e
-     break
+    echo "ERROR"
+    set -e
+    break
+  else
+    echo "OK"
   fi
   set -e
 

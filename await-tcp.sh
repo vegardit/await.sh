@@ -83,7 +83,7 @@ build_nc_command() {
   _nc_cmd="nc"
 
   # check if nc command has connect timeout feature
-  if echo "${_nc_features}" | grep -q -e "-w timeout" -e "-w SECS"; then
+  if echo "${_nc_features}" | grep -q -e "-w timeout" -e "-w secs" -e "-w SECS"; then
     _nc_cmd="${_nc_cmd} -w ${_timeout}"
   else
     # we need to use timeout command
@@ -111,7 +111,7 @@ build_nc_command() {
 
   if [ "${_nc_supports_z}" = "false" ]; then
     # -e must be added after the address positional parameter
-    _nc_cmd="${_nc_cmd} -e true"
+    _nc_cmd="${_nc_cmd} -e /bin/true"
   fi
 
   echo "${_nc_cmd}"
@@ -224,15 +224,18 @@ while true; do
     hostname=${target%%:*}
     port=${target#*:}
     nc_cmd="$(build_nc_command "$probe_timeout" "$hostname" "$port")"
-    echo "=> executing [$nc_cmd]..."
+    printf "=> executing [$nc_cmd]..."
     set +e
     # shellcheck disable=SC2086
     result=$(eval $nc_cmd 2>&1)
     # shellcheck disable=SC2181
     if [ $? -ne 0 ]; then
+      echo "ERROR"
       no_errors=false
       last_error_msg=$result
       last_error_target=$target
+    else
+      echo "OK"
     fi
     set -e
   done

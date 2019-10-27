@@ -79,42 +79,50 @@ build_nc_command() {
   _timeout=$1
   _hostname=$2
   _port=$3
-  _nc_features="$(nc 2>&1 || :)"
-  _nc_cmd="nc"
 
-  # check if nc command has connect timeout feature
-  if echo "${_nc_features}" | grep -q -e "-w timeout" -e "-w secs" -e "-w SECS"; then
-    _nc_cmd="${_nc_cmd} -w ${_timeout}"
+  if command -v "nc" >/dev/null; then
+    _nc_features="$(nc 2>&1 || :)"
+    _nc_cmd="nc"
+
+    # check if nc command has connect timeout feature
+    if echo "${_nc_features}" | grep -q -e "-w timeout" -e "-w secs" -e "-w SECS"; then
+      _nc_cmd="${_nc_cmd} -w ${_timeout}"
+    else
+      # we need to use timeout command
+      _nc_cmd="$(build_timeout_command "$_timeout") ${_nc_cmd}"
+    fi
+
+    # check if nc command supports Zero-I/O mode (scanning)
+    if echo "${_nc_features}" | grep -q -e "-z" -e "\[-.*z\]"; then
+      _nc_cmd="${_nc_cmd} -z"
+    else
+      _nc_supports_z=false
+    fi
+
+    # check if nc command supports -v
+    if echo "${_nc_features}" | grep -q -E -e "-v" -e "\[-[^ ]*v[^]]*\]"; then
+      _nc_cmd="${_nc_cmd} -v"
+    fi
+
+    # check how the address needs to be specified
+    if echo "${_nc_features}" | grep -q -E "[|[]IPADDR PORT]"; then
+      _nc_cmd="${_nc_cmd} ${_hostname}:${_port}"
+    else
+      _nc_cmd="${_nc_cmd} ${_hostname} ${_port}"
+    fi
+
+    if [ "${_nc_supports_z}" = "false" ]; then
+      # -e must be added after the address positional parameter
+      _nc_cmd="${_nc_cmd} -e /bin/true"
+    fi
+
+    echo "${_nc_cmd}"
   else
-    # we need to use timeout command
-    _nc_cmd="$(build_timeout_command "$_timeout") ${_nc_cmd}"
-  fi
+    echo "perl -e 'use IO::Socket;
+my \$socket=IO::Socket::INET->new(PeerAddr => \"$_hostname\", PeerPort => $_port, Timeout => $_timeout);
+if (defined \$socket) {sleep 1; (defined \$socket->connected?exit(0):exit(1))} else {exit(1)}'"
 
-  # check if nc command supports Zero-I/O mode (scanning)
-  if echo "${_nc_features}" | grep -q -e "-z" -e "\[-.*z\]"; then
-    _nc_cmd="${_nc_cmd} -z"
-  else
-    _nc_supports_z=false
   fi
-
-  # check if nc command supports -v
-  if echo "${_nc_features}" | grep -q -E -e "-v" -e "\[-[^ ]*v[^]]*\]"; then
-    _nc_cmd="${_nc_cmd} -v"
-  fi
-
-  # check how the address needs to be specified
-  if echo "${_nc_features}" | grep -q -E "[|[]IPADDR PORT]"; then
-    _nc_cmd="${_nc_cmd} ${_hostname}:${_port}"
-  else
-    _nc_cmd="${_nc_cmd} ${_hostname} ${_port}"
-  fi
-
-  if [ "${_nc_supports_z}" = "false" ]; then
-    # -e must be added after the address positional parameter
-    _nc_cmd="${_nc_cmd} -e /bin/true"
-  fi
-
-  echo "${_nc_cmd}"
 }
 
 
@@ -127,7 +135,9 @@ if [ $# -eq 1 ] && [ "$1" = "--help" ]; then
 fi
 
 assert_command_exists grep
-assert_command_exists nc
+if ! command -v "perl" >/dev/null; then
+  assert_command_exists nc
+fi
 
 force_execution=false
 retry_interval=5

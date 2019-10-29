@@ -1,0 +1,40 @@
+# https://docs.semaphoreci.com/article/50-pipeline-yaml
+version: v1.0
+
+name: await.sh
+
+# See https://docs.semaphoreci.com/article/20-machine-types
+# and https://docs.semaphoreci.com/article/32-ubuntu-1804-image
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+
+blocks:
+- name: "Run shellcheck"
+  task:
+    prologue:
+      commands:
+      - sudo apt-get install -y shellcheck
+    jobs:
+    - name: "Run shellcheck"
+      commands:
+      - checkout
+      - shellcheck -e SC2059 await-*.sh
+- name: "Run tests"
+  task:
+    prologue:
+      commands:
+      - sudo apt-get install -y parallel
+      - git clone https://github.com/bats-core/bats-core.git /tmp/bats-repo
+      - bash /tmp/bats-repo/install.sh /tmp/bats
+    jobs:
+    - name: "Run Tests"
+      matrix: # https://docs.semaphoreci.com/article/102-build-matrix
+      - env_var: TEST_SHELL
+        values: [ "ash", "bash", "busybox", "dash", "ksh", "zsh" ]
+      commands:
+      - sudo apt-get install -y $TEST_SHELL
+      - checkout
+      - bash tests/test-all-travis.sh
+      

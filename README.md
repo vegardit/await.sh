@@ -1,6 +1,7 @@
 # await.sh <a href="https://github.com/vegardit/await.sh/" title="GitHub Repo"><img height="30" src="https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/github.svg?sanitize=true"></a>
 
 [![Build Status](https://travis-ci.com/vegardit/await.sh.svg?branch=master)](https://travis-ci.com/vegardit/await.sh)
+[![Build Status](https://img.shields.io/badge/build-semaphore-blue)](https://vegardit.semaphoreci.com/projects/await.sh)
 [![License](https://img.shields.io/github/license/vegardit/await.sh.svg?label=license)](#license)
 
 1. [What is it?](#what-is-it)

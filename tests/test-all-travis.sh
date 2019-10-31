@@ -7,7 +7,7 @@
 #
 set -e
 
-if command -v parallel >/dev/null; then
+if [[ $OS_LABEL != "Ubuntu 12.04" ]] && command -v parallel >/dev/null; then
   mkdir -p ~/.parallel
   touch ~/.parallel/will-cite
   bats_jobs="-j 6"

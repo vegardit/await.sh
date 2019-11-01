@@ -93,14 +93,14 @@ build_nc_command() {
     fi
 
     # check if nc command supports Zero-I/O mode (scanning)
-    if echo "${_nc_features}" | grep -q -e "-z" -e "\[-.*z\]"; then
+    if echo "${_nc_features}" | grep -q -e "-z" -e "\[-[0-9a-zA-Z]*z[0-9a-zA-Z]*\]"; then
       _nc_cmd="${_nc_cmd} -z"
     else
       _nc_supports_z=false
     fi
 
     # check if nc command supports -v
-    if echo "${_nc_features}" | grep -q -E -e "-v" -e "\[-[^ ]*v[^]]*\]"; then
+    if echo "${_nc_features}" | grep -q -e "-v" -e "\[-[0-9a-zA-Z]*v[0-9a-zA-Z]*\]"; then
       _nc_cmd="${_nc_cmd} -v"
     fi
 

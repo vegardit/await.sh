@@ -32,9 +32,8 @@ blocks:
     - name: "Run Tests"
       matrix: # https://docs.semaphoreci.com/article/102-build-matrix
       - env_var: TEST_SHELL
-        values: [ "ash", "bash", "busybox", "dash", "ksh", "zsh" ]
+        values: [ "ash", "bash", "busybox sh", "dash", "ksh", "zsh" ]
       commands:
-      - sudo apt-get install -y $TEST_SHELL
+      - if [ "$TEST_SHELL" == "busybox sh" ]; then sudo apt-get install -y busybox; else sudo apt-get install -y $TEST_SHELL; fi
       - checkout
       - bash tests/test-all-travis.sh
-      

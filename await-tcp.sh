@@ -275,5 +275,5 @@ echo "SUCCESS: Waiting condition is met."
 if [ -n "$command" ]; then
   echo "Executing [$command]..."
   # shellcheck disable=SC2086
-  eval $command
+  exec $command # using exec so shell process is terminated and signals send by docker deamon are receivable by command
 fi

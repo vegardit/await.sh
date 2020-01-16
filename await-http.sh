@@ -188,7 +188,8 @@ else
     assert_command_exists "$command"
     for arg in "$@"; do
       case $arg in
-        *'"'*) command="$command '$arg'" ;;
+        *'"'*) # shellcheck disable=SC2089
+               command="$command '$arg'" ;;
         *)     command="$command \"$arg\"" ;;
       esac
     done
@@ -256,6 +257,6 @@ echo "SUCCESS: Waiting condition is met."
 ##############################
 if [ -n "$command" ]; then
   echo "Executing [$command]..."
-  # shellcheck disable=SC2086
+  # shellcheck disable=SC2086,SC2090
   exec $command # using exec so shell process is terminated and signals send by docker deamon are receivable by command
 fi

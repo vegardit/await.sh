@@ -213,6 +213,12 @@ echo "SUCCESS: Waiting condition is met."
 ##############################
 if [ -n "$command" ]; then
   echo "Executing [$command]..."
-  # shellcheck disable=SC2086,SC2090
-  exec $command # using exec so shell process is terminated and signals send by docker deamon are receivable by command
+  if [ -n "$ZSH_VERSION" ]; then
+    # to prevent 'command not found: echo "UP"'
+    # shellcheck disable=SC2086,SC2090
+    exec ${command%% *} ${command#* }
+  else
+    # shellcheck disable=SC2086,SC2090
+    exec ${command} # using exec so shell process is terminated and signals send by docker deamon are receivable by command
+  fi
 fi

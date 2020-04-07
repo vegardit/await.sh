@@ -157,50 +157,77 @@ services:
         delay: 5s
 ```
 
-
 ### <a name="k8s"></a>Kubernetes Example
 
-TODO Mount config files
+One way to use the scripts with Kubernetes is creating a configmap and mount it to the container. So you needn't change your containers.
+
+#### Create configmap from scripts
+
+```bash
+kubectl create configmap await-config --from-file=await-cmd.sh --from-file=await-http.sh --from-file=await-tcp.sh
+```
+Kubernetes multicontainer pods have the same resources, so we can check the mysql-port on localhost within our helloworld container.
 
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: myapp-deployment
+  labels:
+    app: deployment
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: deployment
   template:
     metadata:
       labels:
         app: deployment
     spec:
       containers:
-      - name: backend_service
+      - image: mysql:5.6
+        name: mysql
+        env:
+          # Use secret in real usage
+        - name: MYSQL_ROOT_PASSWORD
+          value: password
+        ports:
+        - containerPort: 3306
+          name: mysql
+      - name: frontendservice
         image: karthequian/helloworld
         imagePullPolicy: Always
+        command: ["/bin/sh","-c", "echo 'start await' && cp /opt/scripts/*.sh /tmp && sh /tmp/await-tcp.sh 30 localhost:3306 -- nginx"]
         ports:
         - containerPort: 80
-        readinessProbe:
-          tcpSocket:
-            port: 80
-          initialDelaySeconds: 15
-          periodSeconds: 10
-      - name: frontend_service
-        image: karthequian/helloworld
-        imagePullPolicy: Always
-        args:
-          # wait up to 30 seconds for backend_service to become available, then start nginx
-          /await-http.sh 30 http://backend_service -- nginx
-        ports:
-        - containerPort: 80
-        readinessProbe:
-          tcpSocket:
-            port: 80
-          initialDelaySeconds: 15
-          periodSeconds: 10
+        volumeMounts:
+        - name: await-volume
+          mountPath: /opt/scripts
+      volumes:
+        - name: await-volume
+          configMap:
+            name: await-config
+
 ```
+#### Example output:
 
-
+```
+➜ kubectl logs myapp-deployment-67d6946f86-8qxwc frontendservice                                        
+start await                                                                                             
+Waiting up to 30 seconds for [localhost:3306] to get ready...                                           
+=> executing [perl -e 'use IO::Socket;                                                                  
+my $socket=IO::Socket::INET->new(PeerAddr => "localhost", PeerPort => 3306, Timeout => 10);             
+if (defined $socket) {sleep 1; (defined $socket->connected?exit(0):exit(1))} else {exit(1)}']...ERROR   
+=> executing [perl -e 'use IO::Socket;                                                                  
+my $socket=IO::Socket::INET->new(PeerAddr => "localhost", PeerPort => 3306, Timeout => 10);             
+if (defined $socket) {sleep 1; (defined $socket->connected?exit(0):exit(1))} else {exit(1)}']...ERROR   
+=> executing [perl -e 'use IO::Socket;                                                                  
+my $socket=IO::Socket::INET->new(PeerAddr => "localhost", PeerPort => 3306, Timeout => 10);             
+if (defined $socket) {sleep 1; (defined $socket->connected?exit(0):exit(1))} else {exit(1)}']...OK      
+SUCCESS: Waiting condition is met.                                                                      
+Executing [nginx]...   
+```
 ## <a name="license"></a>License
 
 All files are released under the [Apache License 2.0](LICENSE.txt).

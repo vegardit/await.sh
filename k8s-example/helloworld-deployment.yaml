@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-deployment
+  labels:
+    app: deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: deployment
+  template:
+    metadata:
+      labels:
+        app: deployment
+    spec:
+      containers:
+      - image: mysql:5.6
+        name: mysql
+        env:
+          # Use secret in real usage
+        - name: MYSQL_ROOT_PASSWORD
+          value: password
+        ports:
+        - containerPort: 3306
+          name: mysql
+      - name: frontendservice
+        image: karthequian/helloworld
+        imagePullPolicy: Always
+        command: ["/bin/sh","-c", "echo 'start await' && cp /opt/scripts/*.sh /tmp && sh /tmp/await-tcp.sh 30 localhost:3306 -- nginx"]
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: await-volume
+          mountPath: /opt/scripts
+      volumes:
+        - name: await-volume
+          configMap:
+            name: await-config

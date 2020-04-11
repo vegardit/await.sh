@@ -1,13 +1,12 @@
 #!/usr/bin/env bats
 #
-# Copyright 2019 by Vegard IT GmbH, Germany, https://vegardit.com
+# Copyright 2019-2020 by Vegard IT GmbH, Germany, https://vegardit.com
 # SPDX-License-Identifier: Apache-2.0
 #
 # @author Sebastian Thomschke, Vegard IT GmbH
 #
 # BATS Tests (https://github.com/bats-core/bats-core) of await-http.sh script
 #
-
 
 setup() {
   rc_ok=0

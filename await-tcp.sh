@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright 2019 by Vegard IT GmbH, Germany, https://vegardit.com
+# Copyright 2019-2020 by Vegard IT GmbH, Germany, https://vegardit.com
 # SPDX-License-Identifier: Apache-2.0
 #
 # @author Sebastian Thomschke, Vegard IT GmbH

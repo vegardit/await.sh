@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.com/vegardit/await.sh.svg?branch=master "Tavis CI")](https://travis-ci.com/vegardit/await.sh)
 [![Build Status](https://vegardit.semaphoreci.com/badges/await.sh.svg?style=shields&key=5e32845c-65e8-4773-b17a-481195abb88a "Semaphore CI")](https://vegardit.semaphoreci.com/projects/await.sh)
 [![License](https://img.shields.io/github/license/vegardit/await.sh.svg?label=license)](#license)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
 
 1. [What is it?](#what-is-it)
 1. [Usage](#usage)
@@ -213,20 +214,20 @@ spec:
 #### Example output:
 
 ```
-➜ kubectl logs myapp-deployment-67d6946f86-8qxwc frontendservice                                        
-start await                                                                                             
-Waiting up to 30 seconds for [localhost:3306] to get ready...                                           
-=> executing [perl -e 'use IO::Socket;                                                                  
-my $socket=IO::Socket::INET->new(PeerAddr => "localhost", PeerPort => 3306, Timeout => 10);             
-if (defined $socket) {sleep 1; (defined $socket->connected?exit(0):exit(1))} else {exit(1)}']...ERROR   
-=> executing [perl -e 'use IO::Socket;                                                                  
-my $socket=IO::Socket::INET->new(PeerAddr => "localhost", PeerPort => 3306, Timeout => 10);             
-if (defined $socket) {sleep 1; (defined $socket->connected?exit(0):exit(1))} else {exit(1)}']...ERROR   
-=> executing [perl -e 'use IO::Socket;                                                                  
-my $socket=IO::Socket::INET->new(PeerAddr => "localhost", PeerPort => 3306, Timeout => 10);             
-if (defined $socket) {sleep 1; (defined $socket->connected?exit(0):exit(1))} else {exit(1)}']...OK      
-SUCCESS: Waiting condition is met.                                                                      
-Executing [nginx]...   
+➜ kubectl logs myapp-deployment-67d6946f86-8qxwc frontendservice
+start await
+Waiting up to 30 seconds for [localhost:3306] to get ready...
+=> executing [perl -e 'use IO::Socket;
+my $socket=IO::Socket::INET->new(PeerAddr => "localhost", PeerPort => 3306, Timeout => 10);
+if (defined $socket) {sleep 1; (defined $socket->connected?exit(0):exit(1))} else {exit(1)}']...ERROR
+=> executing [perl -e 'use IO::Socket;
+my $socket=IO::Socket::INET->new(PeerAddr => "localhost", PeerPort => 3306, Timeout => 10);
+if (defined $socket) {sleep 1; (defined $socket->connected?exit(0):exit(1))} else {exit(1)}']...ERROR
+=> executing [perl -e 'use IO::Socket;
+my $socket=IO::Socket::INET->new(PeerAddr => "localhost", PeerPort => 3306, Timeout => 10);
+if (defined $socket) {sleep 1; (defined $socket->connected?exit(0):exit(1))} else {exit(1)}']...OK
+SUCCESS: Waiting condition is met.
+Executing [nginx]...
 ```
 ## <a name="license"></a>License
 

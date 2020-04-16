@@ -1,7 +1,8 @@
+# https://docs.travis-ci.com/user/customizing-the-build
 # https://github.com/travis-ci/travis-yml/blob/master/schema.json
-language: bash # using 'bash' instead of 'minimal' to prevent https://travis-ci.community/t/job-stuck-booting/4976
+dist: bionic
 
-sudo: false
+language: bash # using 'bash' instead of 'minimal' to prevent https://travis-ci.community/t/job-stuck-booting/4976
 
 addons:
   apt:
@@ -12,6 +13,8 @@ addons:
       - ksh
       - zsh
 
+git:
+  depth: 2
 
 # https://docs.travis-ci.com/user/build-matrix/
 
@@ -53,7 +56,7 @@ jobs:
     - {os: windows, env: [TEST_SHELL="bash"]}
 
 before_script:
-  - git clone https://github.com/bats-core/bats-core.git /tmp/bats-repo
+  - git clone --depth=2 https://github.com/bats-core/bats-core.git /tmp/bats-repo
   - bash /tmp/bats-repo/install.sh /tmp/bats
 
 script:

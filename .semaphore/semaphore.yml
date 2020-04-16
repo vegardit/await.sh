@@ -3,8 +3,8 @@ version: v1.0
 
 name: await.sh
 
-# See https://docs.semaphoreci.com/article/20-machine-types
-# and https://docs.semaphoreci.com/article/32-ubuntu-1804-image
+# See https://docs.semaphoreci.com/ci-cd-environment/machine-types/
+# and https://docs.semaphoreci.com/ci-cd-environment/ubuntu-18.04-image/
 agent:
   machine:
     type: e1-standard-2
@@ -26,7 +26,7 @@ blocks:
     prologue:
       commands:
       - sudo apt-get install -y parallel
-      - git clone https://github.com/bats-core/bats-core.git /tmp/bats-repo
+      - git clone --depth 2 https://github.com/bats-core/bats-core.git /tmp/bats-repo
       - bash /tmp/bats-repo/install.sh /tmp/bats
     jobs:
     - name: "Run Tests"

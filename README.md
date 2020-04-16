@@ -158,6 +158,7 @@ services:
         delay: 5s
 ```
 
+
 ### <a name="k8s"></a>Kubernetes Example
 
 One way to use the scripts with Kubernetes is creating a configmap and mount it to the container. So you needn't change your containers.
@@ -167,7 +168,8 @@ One way to use the scripts with Kubernetes is creating a configmap and mount it 
 ```bash
 kubectl create configmap await-config --from-file=await-cmd.sh --from-file=await-http.sh --from-file=await-tcp.sh
 ```
-Kubernetes multicontainer pods have the same resources, so we can check the mysql-port on localhost within our helloworld container.
+
+Kubernetes multi-container pods have the same resources, so we can check the MySQL port on localhost within our helloworld container.
 
 ```yaml
 apiVersion: apps/v1
@@ -206,14 +208,14 @@ spec:
         - name: await-volume
           mountPath: /opt/scripts
       volumes:
-        - name: await-volume
-          configMap:
-            name: await-config
-
+      - name: await-volume
+        configMap:
+          name: await-config
 ```
+
 #### Example output:
 
-```
+```bash
 ➜ kubectl logs myapp-deployment-67d6946f86-8qxwc frontendservice
 start await
 Waiting up to 30 seconds for [localhost:3306] to get ready...
@@ -229,6 +231,15 @@ if (defined $socket) {sleep 1; (defined $socket->connected?exit(0):exit(1))} els
 SUCCESS: Waiting condition is met.
 Executing [nginx]...
 ```
+
+
 ## <a name="license"></a>License
 
 All files are released under the [Apache License 2.0](LICENSE.txt).
+
+Individual files contain the following tag instead of the full license text:
+```
+SPDX-License-Identifier: Apache-2.0
+```
+
+This enables machine processing of license information based on the SPDX License Identifiers that are available here: https://spdx.org/licenses/.

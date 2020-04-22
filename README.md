@@ -26,8 +26,9 @@ which means there is no control over the startup order of multiple containers po
 about this issue can be found here https://github.com/moby/moby/issues/31333 with a lot of pros & cons.
 
 In contrast to other third-party solutions, such as:
-- https://github.com/betalo-sweden/await,
-- https://github.com/Logimethods/docker-eureka, and
+- https://github.com/betalo-sweden/await
+- https://github.com/ufoscout/docker-compose-wait/
+- https://github.com/Logimethods/docker-eureka and
 - https://github.com/vishnubob/wait-for-it (a fork of https://github.com/jlordiales/wait-for-it)
 
 the scripts provided here have minimal system requirements (a POSIX shell, timeout, nc, wget), work with [BusyBox](https://busybox.net/),

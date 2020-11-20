@@ -5,14 +5,7 @@
 #
 # @author Sebastian Thomschke, Vegard IT GmbH
 #
-set -e
-
-# install bats
-if [[ ! -e ~/bats-repo ]]; then
-  git clone https://github.com/bats-core/bats-core.git ~/bats-repo
-  rm -rf ~/bats
-  bash ~/bats-repo/install.sh ~/bats
-fi
+set -eu
 
 run-with() {
   local shell="$1"
@@ -22,20 +15,9 @@ run-with() {
     local bats_jobs="-j 6"
   fi
   if command -v "$shell" >/dev/null; then
-    if [[ $shell == "busybox" ]]; then
-      shell="busybox sh"
-    fi
-    echo "#####################################"
-    echo "# Testing with shell [$shell]..."
-    echo "#####################################"
-    echo
-    for test_file in $(command ls ${0%/*}/*.bats); do
-      echo " Testing [$test_file]..."
-      echo " -----------------------------------"
-      TEST_SHELL="$shell" bash ~/bats/bin/bats ${bats_jobs:-} "$test_file"
-    done
+    ${0%/*}/test.sh "$shell"
   else
-    echo "Skipping testing with shell: $shell..."
+    echo "Skipping testing with shell [$shell]..."
   fi
 }
 

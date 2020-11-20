@@ -1,3 +1,4 @@
+# old build file for Travis CI
 # https://docs.travis-ci.com/user/customizing-the-build
 # https://github.com/travis-ci/travis-yml/blob/master/schema.json
 dist: bionic
@@ -43,12 +44,6 @@ jobs:
     - {os: linux, dist: trusty,  env: [OS_LABEL="Ubuntu 14.04", TEST_SHELL="sh"]}
     - {os: linux, dist: trusty,  env: [OS_LABEL="Ubuntu 14.04", TEST_SHELL="ksh"]}
     - {os: linux, dist: trusty,  env: [OS_LABEL="Ubuntu 14.04", TEST_SHELL="zsh"]}
-    - {os: linux, dist: precise, env: [OS_LABEL="Ubuntu 12.04", TEST_SHELL="bash"]}
-    - {os: linux, dist: precise, env: [OS_LABEL="Ubuntu 12.04", TEST_SHELL="busybox sh"]}
-    - {os: linux, dist: precise, env: [OS_LABEL="Ubuntu 12.04", TEST_SHELL="dash"]}
-    - {os: linux, dist: precise, env: [OS_LABEL="Ubuntu 12.04", TEST_SHELL="sh"]}
-    - {os: linux, dist: precise, env: [OS_LABEL="Ubuntu 12.04", TEST_SHELL="ksh"]}
-    - {os: linux, dist: precise, env: [OS_LABEL="Ubuntu 12.04", TEST_SHELL="zsh"]}
     - {os: osx, env: [TEST_SHELL="bash"]}
     - {os: osx, env: [TEST_SHELL="sh"]}
     - {os: osx, env: [TEST_SHELL="ksh"]}
@@ -61,4 +56,4 @@ before_script:
 
 script:
   - if command -v shellcheck >/dev/null; then echo "Running [shellcheck]..."; shellcheck -e SC2059 await-*.sh; fi
-  - bash tests/test-all-travis.sh
+  - bash tests/test-all.sh

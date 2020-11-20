@@ -26,14 +26,12 @@ blocks:
     prologue:
       commands:
       - sudo apt-get install -y parallel
-      - git clone --depth 2 https://github.com/bats-core/bats-core.git /tmp/bats-repo
-      - bash /tmp/bats-repo/install.sh /tmp/bats
     jobs:
     - name: "Run Tests"
       matrix: # https://docs.semaphoreci.com/article/102-build-matrix
       - env_var: TEST_SHELL
-        values: [ "ash", "bash", "busybox sh", "dash", "ksh", "zsh" ]
+        values: [ "ash", "bash", "busybox", "dash", "ksh", "zsh" ]
       commands:
-      - if [ "$TEST_SHELL" == "busybox sh" ]; then sudo apt-get install -y busybox; else sudo apt-get install -y $TEST_SHELL; fi
+      - sudo apt-get install -y $TEST_SHELL
       - checkout
-      - bash tests/test-all-travis.sh
+      - bash tests/test.sh $TEST_SHELL

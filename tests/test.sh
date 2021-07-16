@@ -31,7 +31,7 @@ echo "# Testing with shell [$TEST_SHELL]..."
 echo "#####################################"
 echo
 for test_file in $(command ls ${0%/*}/*.bats); do
-  echo " Testing [$test_file]..."
-  echo " -----------------------------------"
+  echo "Testing [$test_file]..."
+  echo "-----------------------------------"
   bash ~/bats/bin/bats ${bats_jobs:-} "$test_file"
 done

@@ -1,8 +1,17 @@
+# Copyright 2019-2021 by Vegard IT GmbH, Germany, https://vegardit.com
+# SPDX-License-Identifier: Apache-2.0
+#
+# Author: Sebastian Thomschke, Vegard IT GmbH
+#
 # https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-syntax-for-github-actions
 name: Build
 
 on:
   push:
+    branches:
+    - '**'
+    tags-ignore:
+    - '**'
     paths-ignore:
     - '**/*.md'
     - '.github/*.yml'
@@ -31,7 +40,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os:         [ "ubuntu-20.04", "ubuntu-18.04", "ubuntu-16.04" ]
+        os:         [ "ubuntu-20.04", "ubuntu-18.04" ]
         test_shell: [ "ash", "bash", "busybox", "dash", "ksh", "zsh" ]
     steps:
     - name: Git Checkout

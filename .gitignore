@@ -5,3 +5,26 @@ _LOCAL/
 /.project
 /.settings
 **/.*.md.html
+
+# IntelliJ
+.idea
+*.iml
+*.ipr
+*.iws
+
+# NetBeans
+nb-configuration.xml
+
+# Visual Studio Code
+.vscode
+
+# OSX
+.DS_Store
+
+# Vim
+*.swo
+*.swp
+
+# patch
+*.orig
+*.rej

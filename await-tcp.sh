@@ -10,6 +10,18 @@
 set -e
 
 
+#################################################
+# enable debug mode if requested
+#################################################
+if [ "${DEBUG:-}" = "1" ]; then
+  if command -v "ps" >/dev/null; then
+    echo "shell: $(ps -sp $$)" >&2
+  fi
+  PS4='+[$?] $0:$LINENO  '
+  set -x
+fi
+
+
 ##############################
 # Exit codes
 ##############################

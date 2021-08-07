@@ -19,7 +19,6 @@ on:
   workflow_dispatch:
     # https://github.blog/changelog/2020-07-06-github-actions-manual-triggers-with-workflow_dispatch/
 
-
 jobs:
 
   shellcheck:
@@ -39,17 +38,28 @@ jobs:
   test:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os:         [ "ubuntu-20.04", "ubuntu-18.04" ]
         test_shell: [ "ash", "bash", "busybox", "dash", "ksh", "zsh" ]
+        include:
+          - { os: macos-10.15, test_shell: bash }
+          - { os: macos-10.15, test_shell: ksh }
+          - { os: macos-10.15, test_shell: zsh }
     steps:
     - name: Git Checkout
       uses: actions/checkout@v2 #https://github.com/actions/checkout
 
     - name: Install ${{ matrix.test_shell }}
       run: |
-        sudo apt-get install -y bash parallel ${{ matrix.test_shell }}
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+          brew install bash parallel ${{ matrix.test_shell }}
+        else
+          sudo apt-get install -y bash parallel ${{ matrix.test_shell }}
+        fi
 
     - name: Test with ${{ matrix.test_shell }}
+      continue-on-error: ${{ runner.os == 'macOS' }} # too many random hangs 
+      timeout-minutes: 2
       run: |
         bash tests/test.sh ${{ matrix.test_shell }}

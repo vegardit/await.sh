@@ -1,4 +1,4 @@
-# https://docs.semaphoreci.com/article/50-pipeline-yaml
+# https://docs.semaphoreci.com/reference/pipeline-yaml-reference/
 version: v1.0
 
 name: await.sh

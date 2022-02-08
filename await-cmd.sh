@@ -153,8 +153,8 @@ while [ $# -gt 0 ]; do
     break
   fi
   case $1 in
-    *'"'*) command="$command '$1'" ;;
-    *)     command="$command \"$1\"" ;;
+    *'"'*) test_command="$test_command '$1'" ;;
+    *)     test_command="$test_command \"$1\"" ;;
   esac
   shift
 done

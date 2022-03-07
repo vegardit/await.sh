@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Git Checkout
-      uses: actions/checkout@v2 #https://github.com/actions/checkout
+      uses: actions/checkout@v3 #https://github.com/actions/checkout
 
     - name: Install shellcheck
       run: sudo apt-get install -y bash shellcheck
@@ -48,7 +48,7 @@ jobs:
           - { os: macos-10.15, test_shell: zsh }
     steps:
     - name: Git Checkout
-      uses: actions/checkout@v2 #https://github.com/actions/checkout
+      uses: actions/checkout@v3 #https://github.com/actions/checkout
 
     - name: Install ${{ matrix.test_shell }}
       run: |

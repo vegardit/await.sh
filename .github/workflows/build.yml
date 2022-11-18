@@ -40,12 +40,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os:         [ "ubuntu-20.04", "ubuntu-18.04" ]
+        os:         [ "ubuntu-20.04", "ubuntu-22.04" ]
         test_shell: [ "ash", "bash", "busybox", "dash", "ksh", "zsh" ]
         include:
-          - { os: macos-10.15, test_shell: bash }
-          - { os: macos-10.15, test_shell: ksh }
-          - { os: macos-10.15, test_shell: zsh }
+          - { os: macos-11, test_shell: bash }
+          - { os: macos-11, test_shell: ksh }
+          - { os: macos-11, test_shell: zsh }
+          - { os: macos-12, test_shell: bash }
+          - { os: macos-12, test_shell: ksh }
+          - { os: macos-12, test_shell: zsh }
     steps:
     - name: Git Checkout
       uses: actions/checkout@v3 #https://github.com/actions/checkout

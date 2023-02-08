@@ -12,10 +12,9 @@ run-with() {
   if command -v parallel >/dev/null; then
     mkdir -p ~/.parallel
     touch ~/.parallel/will-cite
-    local bats_jobs="-j 6"
   fi
   if command -v "$shell" >/dev/null; then
-    ${0%/*}/test.sh "$shell"
+    "${0%/*}"/test.sh "$shell"
   else
     echo "Skipping testing with shell [$shell]..."
   fi

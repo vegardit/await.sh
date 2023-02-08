@@ -30,8 +30,10 @@ echo "#####################################"
 echo "# Testing with shell [$TEST_SHELL]..."
 echo "#####################################"
 echo
-for test_file in $(command ls ${0%/*}/*.bats); do
+for test_file in "${0%/*}"/*.bats; do
   echo "Testing [$test_file]..."
   echo "-----------------------------------"
+
+  # shellcheck disable=SC2086 # (info): Double quote to prevent globbing and word splitting
   bash ~/bats/bin/bats ${bats_jobs:-} "$test_file"
 done

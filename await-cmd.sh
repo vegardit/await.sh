@@ -7,6 +7,7 @@
 #
 # https://github.com/vegardit/await.sh/
 #
+# shellcheck disable=SC2059 # (warning): Don't use variables in the printf format string
 set -e
 
 

@@ -15,6 +15,7 @@ on:
     paths-ignore:
     - '**/*.md'
     - '.github/*.yml'
+    - '.semaphore/**/*'
   pull_request:
   workflow_dispatch:
     # https://github.blog/changelog/2020-07-06-github-actions-manual-triggers-with-workflow_dispatch/
@@ -27,13 +28,8 @@ jobs:
     - name: Git Checkout
       uses: actions/checkout@v3 #https://github.com/actions/checkout
 
-    - name: Install shellcheck
-      run: sudo apt-get install -y bash shellcheck
-
-    - name: Testing with shellcheck
-      run: |
-        shellcheck -V
-        shellcheck -s sh -e SC2059 await-*.sh
+    - name: Run shellcheck
+      run: bash tests/run-shellcheck.sh
 
   test:
     runs-on: ${{ matrix.os }}

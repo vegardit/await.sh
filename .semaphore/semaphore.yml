@@ -8,24 +8,25 @@ name: await.sh
 agent:
   machine:
     type: e1-standard-2
-    os_image: ubuntu1804
+    os_image: ubuntu2004
 
 blocks:
 - name: "Run shellcheck"
   task:
     prologue:
       commands:
-      - sudo apt-get install -y shellcheck
+      - checkout
     jobs:
     - name: "Run shellcheck"
       commands:
-      - checkout
-      - shellcheck -e SC2059 await-*.sh
+      - bash tests/run-shellcheck.sh
+
 - name: "Run tests"
   task:
     prologue:
       commands:
       - sudo apt-get install -y parallel
+      - checkout
     jobs:
     - name: "Run Tests"
       matrix: # https://docs.semaphoreci.com/article/102-build-matrix
@@ -33,5 +34,4 @@ blocks:
         values: [ "ash", "bash", "busybox", "dash", "ksh", "zsh" ]
       commands:
       - sudo apt-get install -y $TEST_SHELL
-      - checkout
       - bash tests/test.sh $TEST_SHELL

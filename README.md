@@ -5,6 +5,9 @@
 [![License](https://img.shields.io/github/license/vegardit/await.sh.svg?label=license)](#license)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
 
+
+**Feedback and high-quality pull requests are highly welcome!**
+
 1. [What is it?](#what-is-it)
 1. [Usage](#usage)
     1. [await-cmd.sh](#await-cmd)
@@ -216,7 +219,7 @@ spec:
 
 #### Example output:
 
-```bash
+```sh
 ➜ kubectl logs myapp-deployment-67d6946f86-8qxwc frontendservice
 start await
 Waiting up to 30 seconds for [localhost:3306] to get ready...

@@ -60,4 +60,4 @@ jobs:
       continue-on-error: ${{ runner.os == 'macOS' }} # too many random hangs 
       timeout-minutes: 2
       run: |
-        bash tests/test.sh ${{ matrix.test_shell }}
+        bash tests/run-tests.sh ${{ matrix.test_shell }}

@@ -38,4 +38,4 @@ blocks:
         values: [ "ash", "bash", "busybox", "dash", "ksh", "zsh" ]
       commands:
       - sudo apt-get install -y $TEST_SHELL
-      - bash tests/test.sh $TEST_SHELL
+      - bash tests/run-tests.sh $TEST_SHELL

@@ -6,10 +6,15 @@
 set -eu
 
 # install bats
-if [[ ! -e ~/bats-repo ]]; then
-  git clone https://github.com/bats-core/bats-core.git ~/bats-repo
-  rm -rf ~/bats
-  bash ~/bats-repo/install.sh ~/bats
+if [[ ! -d ~/bats/core ]]; then
+  mkdir -p ~/bats
+  git clone --depth=1 --single-branch https://github.com/bats-core/bats-core.git ~/bats/core
+fi
+if [[ ! -d ~/bats/support ]]; then
+  git clone --depth=1 --single-branch https://github.com/bats-core/bats-support.git ~/bats/support
+fi
+if [[ ! -d ~/bats/assert ]]; then
+  git clone --depth=1 --single-branch https://github.com/bats-core/bats-assert.git ~/bats/assert
 fi
 
 if command -v parallel >/dev/null; then
@@ -33,5 +38,5 @@ for test_file in "${0%/*}"/*.bats; do
   echo "-----------------------------------"
 
   # shellcheck disable=SC2086 # (info): Double quote to prevent globbing and word splitting
-  bash ~/bats/bin/bats ${bats_jobs:-} "$test_file"
+  bash ~/bats/core/bin/bats ${bats_jobs:-} "$test_file"
 done

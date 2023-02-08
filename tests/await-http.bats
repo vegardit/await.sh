@@ -6,24 +6,27 @@
 # BATS Tests (https://github.com/bats-core/bats-core) of await-http.sh script
 #
 
-setup() {
-  rc_ok=0
-  rc_cmd_not_found=2
-  rc_invalid_args=3
-  rc_timed_out=4
+function setup() {
+  load ~/bats/support/load
+  load ~/bats/assert/load
 
-  candidate=$BATS_TEST_DIRNAME/../await-http.sh
-  chmod u+x $candidate
+  readonly RC_OK=0
+  readonly RC_CMD_NOT_FOUND=2
+  readonly RC_INVALID_ARGS=3
+  readonly RC_TIMED_OUT=4
+
+  CANDIDATE=$BATS_TEST_DIRNAME/../await-http.sh
+  chmod u+x $CANDIDATE
 
   if [ -n "$TEST_SHELL" ]; then
-    candidate="${TEST_SHELL} $candidate"
+    CANDIDATE="${TEST_SHELL} $CANDIDATE"
   fi
 }
 
 
-test_with() {
+function assert_exitcode() {
   expected_rc=$1 && shift
-  run $candidate "$@"
+  run $CANDIDATE "$@"
 
   if [ $status -ne 0 ] && [[ $output == *"wget: not an http or ftp url"* ]]; then
     # silently ignore test if wget is compiled without HTTP support.
@@ -31,7 +34,7 @@ test_with() {
   fi
 
   if [ $status -ne $expected_rc ]; then
-    echo "# COMMAND: $candidate $@" >&3
+    echo "# COMMAND: $CANDIDATE $@" >&3
     echo "# ERROR: $output" >&3
     return 1
   fi
@@ -43,50 +46,50 @@ test_with() {
 ##############################
 
 @test "${TEST_SHELL:-sh}: Show usage help if executed without args" {
-  test_with $rc_invalid_args
+  assert_exitcode $RC_INVALID_ARGS
 
-  [[ $output == *"Usage:"* ]]
-  [[ $output == *"ERROR: Required parameter missing"* ]]
+  assert_regex "$output" '^Usage:'
+  assert_regex "$output" 'ERROR: Required parameter missing'
 }
 
 
 @test "${TEST_SHELL:-sh}: Show usage help if executed with --help" {
-  test_with $rc_ok --help
+  assert_exitcode $RC_OK --help
 
-  [[ $output == *"Usage:"* ]]
-  [[ $output != *"ERROR:"* ]]
+  assert_regex "$output" '^Usage:'
+  refute_regex "$output" 'ERROR:'
 }
 
 
 @test "${TEST_SHELL:-sh}: Test missing TIMEOUT parameter" {
-  test_with $rc_invalid_args http://google.com -- echo UP
+  assert_exitcode $RC_INVALID_ARGS http://google.com -- echo UP
 
-  [[ $output != *"UP"* ]]
-  [[ $output == *"ERROR: TIMEOUT parameter must be an integer"* ]]
+  refute_regex "$output" 'UP'
+  assert_regex "$output" 'ERROR: TIMEOUT parameter must be an integer'
 }
 
 
 @test "${TEST_SHELL:-sh}: Test invalid -t option value" {
-  test_with $rc_invalid_args -t BLA 5 http://google.com -- echo UP
+  assert_exitcode $RC_INVALID_ARGS -t BLA 5 http://google.com -- echo UP
 
-  [[ $output != *"UP"* ]]
-  [[ $output == *"ERROR: Option -t must be followed by an integer"* ]]
+  refute_regex "$output" 'UP'
+  assert_regex "$output" 'ERROR: Option -t must be followed by an integer'
 }
 
 
 @test "${TEST_SHELL:-sh}: Test missing -t option value" {
-  test_with $rc_invalid_args -t -w 5 5 http://google.com -- echo UP
+  assert_exitcode $RC_INVALID_ARGS -t -w 5 5 http://google.com -- echo UP
 
-  [[ $output != *"UP"* ]]
-  [[ $output == *"ERROR: Option -t must be followed by an integer"* ]]
+  refute_regex "$output" 'UP'
+  assert_regex "$output" 'ERROR: Option -t must be followed by an integer'
 }
 
 
 @test "${TEST_SHELL:-sh}: Test invalid -w option value" {
-  test_with $rc_invalid_args -w BLA 5 http://google.com -- echo UP
+  assert_exitcode $RC_INVALID_ARGS -w BLA 5 http://google.com -- echo UP
 
-  [[ $output != *"UP"* ]]
-  [[ $output == *"ERROR: Option -w must be followed by an integer"* ]]
+  refute_regex "$output" 'UP'
+  assert_regex "$output" 'ERROR: Option -w must be followed by an integer'
 }
 
 
@@ -95,58 +98,58 @@ test_with() {
 ##############################
 
 @test "${TEST_SHELL:-sh}: Test http://google.com is available" {
-  test_with $rc_ok 10 http://google.com -- echo UP
+  assert_exitcode $RC_OK 10 http://google.com -- echo 'UP'
 
-  [[ $output == *"UP"* ]]
-  [[ $output != *"ERROR:"* ]]
+  assert_regex "$output" 'UP'
+  refute_regex "$output" 'ERROR:'
 }
 
 
 @test "${TEST_SHELL:-sh}: Test http://google.com AND https://google.com are available" {
-  test_with $rc_ok 10 http://google.com https://google.com -- echo UP
+  assert_exitcode $RC_OK 10 http://google.com https://google.com -- echo UP
 
   if [[ $output == *"wget: not an http or ftp url"* ]]; then
     # silently ignore test if wget is compiled without HTTP support.
     return 0
   fi
 
-  [[ $output == *"UP"* ]]
-  [[ $output != *"ERROR:"* ]]
+  assert_regex "$output" 'UP'
+  refute_regex "$output" 'ERROR:'
 }
 
 
 @test "${TEST_SHELL:-sh}: Test http://google.com:84 is unavailable" {
-  test_with $rc_timed_out 5 http://google.com:84 -- echo UP
+  assert_exitcode $RC_TIMED_OUT 5 http://google.com:84 -- echo 'UP'
 
-  [[ $output != *"UP"* ]]
-  [[ $output == *"ERROR:"*"did not get ready within required time"* ]]
+  refute_regex "$output" 'UP'
+  assert_regex "$output" 'ERROR:.*did not get ready within required time'
 }
 
 
 @test "${TEST_SHELL:-sh}: Test http://google.com:443 is unavailable (protocol mismatch)" {
-  test_with $rc_timed_out 5 http://google.com:443 -- echo UP
+  assert_exitcode $RC_TIMED_OUT 5 http://google.com:443 -- echo 'UP'
 
-  [[ $output != *"UP"* ]]
-  [[ $output == *"ERROR:"*"did not get ready within required time"* ]]
+  refute_regex "$output" 'UP'
+  assert_regex "$output" 'ERROR:.*did not get ready within required time'
 }
 
 
 @test "${TEST_SHELL:-sh}: Test https://google.com:80 is unavailable (protocol mismatch)" {
-  test_with $rc_timed_out 5 http://google.com:443 -- echo UP
+  assert_exitcode $RC_TIMED_OUT 5 http://google.com:443 -- echo 'UP'
 
   if [[ $output == *"wget: not an http or ftp url"* ]]; then
     # silently ignore test if wget is compiled without HTTP support.
     return 0
   fi
 
-  [[ $output != *"UP"* ]]
-  [[ $output == *"ERROR:"*"did not get ready within required time"* ]]
+  refute_regex "$output" 'UP'
+  assert_regex "$output" 'ERROR:.*did not get ready within required time'
 }
 
 
 @test "${TEST_SHELL:-sh}: Test one of multiple URLs is unavailable" {
-  test_with $rc_timed_out 5 http://google.com http://google.com:84 -- echo UP
+  assert_exitcode $RC_TIMED_OUT 5 http://google.com http://google.com:84 -- echo UP
 
-  [[ $output != *"UP"* ]]
-  [[ $output == *"ERROR:"*"did not get ready within required time"* ]]
+  refute_regex "$output" 'UP'
+  assert_regex "$output" 'ERROR:.*did not get ready within required time'
 }

@@ -1,11 +1,9 @@
 #!/usr/bin/env bats
-#
-# Copyright 2019-2021 by Vegard IT GmbH, Germany, https://vegardit.com
+# SPDX-FileCopyrightText: © Vegard IT GmbH (https://vegardit.com) and contributors
+# SPDX-FileContributor: Sebastian Thomschke, Vegard IT GmbH
 # SPDX-License-Identifier: Apache-2.0
 #
-# @author Sebastian Thomschke, Vegard IT GmbH
-#
-# BATS Tests (https://github.com/bats-core/bats-core) of await-http.sh script
+# BATS Tests (https://github.com/bats-core/bats-core) of await-cmd.sh script
 #
 
 setup() {

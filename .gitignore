@@ -12,8 +12,8 @@ _LOCAL/
 *.ipr
 *.iws
 
-# NetBeans
-nb-configuration.xml
+# Eclipse Theia
+.theia
 
 # Visual Studio Code
 .vscode
@@ -28,3 +28,8 @@ nb-configuration.xml
 # patch
 *.orig
 *.rej
+
+# Temp files
+.history
+*.tmp
+*.bak

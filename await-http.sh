@@ -89,22 +89,14 @@ build_timeout_command() {
 build_http_get_command() {
   # use wget by default (which starts faster), use curl if requested via PREFERED_HTTP_CLIENT or if wget is not available
   if [ "$PREFERED_HTTP_CLIENT" = "curl" ] || (command -v curl >/dev/null && ! command -v wget >/dev/null); then
-    _http_get="curl -sSf -o /dev/null"
+    _http_get="curl -sSfL --range 0-0 -o /dev/null"
   else
     _wget_features=$(wget --help 2>&1)
 
-    _http_get="wget -O /dev/null"
+    _http_get="wget --header='Range: bytes=0-0' -O /dev/null" # ignore the output
 
-    if echo "${_wget_features}" | grep -q -e "GNU Wget 1.19.[4|5]"; then
-      # workaround for Wget writing unwanted wget-log files https://savannah.gnu.org/bugs/?51181
-      _http_get="${_http_get} -o /dev/null"
-    fi
-
-    if echo "${_wget_features}" | grep -q -- "--spider"; then
-      _http_get="${_http_get} --spider"
-    elif echo "${_wget_features}" | grep -q "BusyBox"; then
-      _http_get="${_http_get} -s" # e.g. BusyBox 1.20
-    fi
+    # workaround for wget sometimes writing unwanted wget.log files https://savannah.gnu.org/bugs/?51181
+    _http_get="${_http_get} -o /dev/stderr"
 
     if echo "${_wget_features}" | grep -q -- "--tries"; then
       _http_get="${_http_get} --tries 1" # to prevent endless retries on GNU Wget

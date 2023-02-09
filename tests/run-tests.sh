@@ -23,7 +23,7 @@ if command -v parallel >/dev/null; then
   bats_jobs="-j 6"
 fi
 
-shells=${*:-bash dash ksh zsh busybox}
+shells=${*:-ash bash busybox dash ksh zsh}
 
 for shell in $shells; do
   export TEST_SHELL=$shell

@@ -18,6 +18,24 @@ on:
   pull_request:
   workflow_dispatch:
     # https://github.blog/changelog/2020-07-06-github-actions-manual-triggers-with-workflow_dispatch/
+    inputs:
+      debug-with-ssh:
+        description: "Start an SSH server for debugging purposes after test runs:"
+        default: never
+        type: choice
+        options:
+        - always
+        - on_failure
+        - on_failure_or_cancelled
+        - never
+      debug-with-ssh-only-for-actor:
+        description: "Limit access to the SSH server to the GitHub user that triggered the job."
+        default: true
+        type: boolean
+
+defaults:
+  run:
+    shell: bash
 
 jobs:
 
@@ -61,3 +79,9 @@ jobs:
       timeout-minutes: 2
       run: |
         bash tests/run-tests.sh ${{ matrix.test_shell }}
+
+    - name: "SSH session for debugging"
+      uses: mxschmitt/action-tmate@v3
+      if: ${{ (inputs.debug-with-ssh == 'always' && always()) || (inputs.debug-with-ssh == 'on_failure' && failure()) || (inputs.debug-with-ssh == 'on_failure_or_cancelled' && (failure() || cancelled())) }}
+      with:
+        limit-access-to-actor: ${{ inputs.debug-with-ssh-only-for-actor }}

@@ -15,7 +15,7 @@ function setup() {
   readonly RC_INVALID_ARGS=3
   readonly RC_TIMED_OUT=4
 
-  CANDIDATE=$(realpath $BATS_TEST_DIRNAME/../await-cmd.sh)
+  CANDIDATE=$(dirname "$BATS_TEST_DIRNAME")/await-cmd.sh
   chmod u+x $CANDIDATE
 
   if [ -n "$TEST_SHELL" ]; then

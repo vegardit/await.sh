@@ -34,7 +34,7 @@ In contrast to other third-party solutions, such as:
 - https://github.com/Logimethods/docker-eureka and
 - https://github.com/vishnubob/wait-for-it (a fork of https://github.com/jlordiales/wait-for-it)
 
-the scripts provided here have minimal system requirements (a POSIX shell, timeout, nc, wget), work with [BusyBox](https://busybox.net/),
+the scripts provided here have minimal system requirements (a POSIX shell, timeout, nc, curl or wget), work with [BusyBox](https://busybox.net/),
 [Alpine Linux](https://hub.docker.com/_/alpine) images and can be used without modifying existing images.
 
 The scripts are automatically tested using [Bats](https://github.com/bats-core/) and executed under ash, bash, busybox, dash, ksh and zsh.

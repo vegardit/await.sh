@@ -86,31 +86,35 @@ build_timeout_command() {
   fi
 }
 
-build_wget_command() {
-  _wget_features=$(wget --help 2>&1)
-
-  _wget_cmd="wget"
-
-  if echo "${_wget_features}" | grep -q -e "GNU Wget 1.19.[4|5]"; then
-    # workaround for Wget writing unwanted wget-log files https://savannah.gnu.org/bugs/?51181
-    _wget_cmd="${_wget_cmd} -o /dev/null"
-  fi
-
-  if echo "${_wget_features}" | grep -q -- "--spider"; then
-    _wget_cmd="${_wget_cmd} --spider"
+build_http_get_command() {
+  # use wget by default (which starts faster), use curl if requested via PREFERED_HTTP_CLIENT or if wget is not available
+  if [ "$PREFERED_HTTP_CLIENT" = "curl" ] || (command -v curl >/dev/null && ! command -v wget >/dev/null); then
+    _http_get="curl -sSf -o /dev/null"
   else
-    _wget_cmd="${_wget_cmd} -s" # e.g. BusyBox 1.20
-  fi
+    _wget_features=$(wget --help 2>&1)
 
-  if echo "${_wget_features}" | grep -q -- "--tries"; then
-    _wget_cmd="${_wget_cmd} --tries 1" # to prevent endless retries on GNU Wget
-  fi
+    _http_get="wget -O /dev/null"
 
-  if echo "${_wget_features}" | grep -q -- "-S"; then
-    _wget_cmd="${_wget_cmd} -S"
-  fi
+    if echo "${_wget_features}" | grep -q -e "GNU Wget 1.19.[4|5]"; then
+      # workaround for Wget writing unwanted wget-log files https://savannah.gnu.org/bugs/?51181
+      _http_get="${_http_get} -o /dev/null"
+    fi
 
-  echo "${_wget_cmd}"
+    if echo "${_wget_features}" | grep -q -- "--spider"; then
+      _http_get="${_http_get} --spider"
+    elif echo "${_wget_features}" | grep -q "BusyBox"; then
+      _http_get="${_http_get} -s" # e.g. BusyBox 1.20
+    fi
+
+    if echo "${_wget_features}" | grep -q -- "--tries"; then
+      _http_get="${_http_get} --tries 1" # to prevent endless retries on GNU Wget
+    fi
+
+    if echo "${_wget_features}" | grep -q -e " -S," -e " -S "; then
+      _http_get="${_http_get} -S" # print server response
+    fi
+  fi
+  echo "${_http_get}"
 }
 
 
@@ -123,7 +127,9 @@ if [ $# -eq 1 ] && [ "$1" = "--help" ]; then
 fi
 
 assert_command_exists grep
-assert_command_exists wget
+if ! command -v wget >/dev/null; then
+  assert_command_exists curl
+fi
 
 force_execution=false
 retry_interval=5
@@ -214,16 +220,16 @@ fi
 echo "Waiting up to $deadline seconds for [$targets] to get ready..."
 wait_until=$(( $(date +%s) + deadline ))
 timeout_cmd=$(build_timeout_command "$probe_timeout")
-wget_cmd=$(build_wget_command)
+http_get=$(build_http_get_command)
 while true; do
   no_errors=true
   last_error_msg=
   last_error_target=
   for target in $targets; do
-    printf "=> executing [$timeout_cmd $wget_cmd $target]..."
+    printf "=> executing [$timeout_cmd $http_get $target]..."
     set +e
     # shellcheck disable=SC2086
-    result=$(eval $timeout_cmd $wget_cmd "$target" 2>&1)
+    result=$(eval $timeout_cmd $http_get "$target" 2>&1)
     # shellcheck disable=SC2181
     if [ $? -ne 0 ]; then
       echo "ERROR"

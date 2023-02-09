@@ -50,6 +50,14 @@ for shell in $shells; do
     # shellcheck disable=SC2086 # (info): Double quote to prevent globbing and word splitting
     bash ~/bats/core/bin/bats ${bats_jobs:-} "$test_file"
   done
+
+  echo "Testing [PREFERED_HTTP_CLIENT=curl tests/await-http.bats]..."
+  # shellcheck disable=SC2086 # (info): Double quote to prevent globbing and word splitting
+  PREFERED_HTTP_CLIENT=curl bash ~/bats/core/bin/bats ${bats_jobs:-} "tests/await-http.bats"
+
+  echo "Testing [PREFERED_HTTP_CLIENT=wget tests/await-http.bats]..."
+  # shellcheck disable=SC2086 # (info): Double quote to prevent globbing and word splitting
+  PREFERED_HTTP_CLIENT=wget bash ~/bats/core/bin/bats ${bats_jobs:-} "tests/await-http.bats"
 done
 
 

@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Git Checkout
-      uses: actions/checkout@v3 #https://github.com/actions/checkout
+      uses: actions/checkout@v4 #https://github.com/actions/checkout
 
     - name: Run shellcheck
       run: bash tests/run-shellcheck.sh
@@ -64,7 +64,7 @@ jobs:
           - { os: macos-12, test_shell: zsh }
     steps:
     - name: Git Checkout
-      uses: actions/checkout@v3 #https://github.com/actions/checkout
+      uses: actions/checkout@v4 #https://github.com/actions/checkout
 
     - name: Install ${{ matrix.test_shell }}
       run: |

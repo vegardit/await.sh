@@ -2,25 +2,37 @@
 # SPDX-FileContributor: Sebastian Thomschke, Vegard IT GmbH
 # SPDX-License-Identifier: Apache-2.0
 #
-# https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-syntax-for-github-actions
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
 name: Build
 
 on:
   push:
-    branches:
-    - '**'
-    tags-ignore:
+    branches-ignore:  # build all branches except:
+    - 'dependabot/**'  # prevent GHA triggered twice (once for commit to the branch and once for opening/syncing the PR)
+    tags-ignore:  # don't build tags
     - '**'
     paths-ignore:
     - '**/*.md'
     - '.github/*.yml'
     - '.semaphore/**/*'
+    - '**/.project'
+    - '**/.settings/*.prefs'
+    - '.gitignore'
+    - '.actrc'
   pull_request:
+    paths-ignore:
+    - '**/*.md'
+    - '.github/*.yml'
+    - '.semaphore/**/*'
+    - '**/.project'
+    - '**/.settings/*.prefs'
+    - '.gitignore'
+    - '.actrc'
   workflow_dispatch:
     # https://github.blog/changelog/2020-07-06-github-actions-manual-triggers-with-workflow_dispatch/
     inputs:
       debug-with-ssh:
-        description: "Start an SSH session for debugging purposes after tests ran:"
+        description: "Start an SSH session for debugging purposes at the end of the build:"
         default: never
         type: choice
         options: [ always, on_failure, on_failure_or_cancelled, never ]
@@ -33,13 +45,17 @@ on:
         default: ".*"
         type: string
 
+
 defaults:
   run:
     shell: bash
 
+
 jobs:
 
+  ###########################################################
   shellcheck:
+  ###########################################################
     runs-on: ubuntu-latest
     steps:
     - name: Git Checkout
@@ -48,23 +64,36 @@ jobs:
     - name: Run shellcheck
       run: bash tests/run-shellcheck.sh
 
+  ###########################################################
   test:
+  ###########################################################
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
-      matrix:
+      matrix:  # https://github.com/actions/runner-images#available-images
         os:         [ "ubuntu-20.04", "ubuntu-22.04" ]
         test_shell: [ "ash" , "bash", "busybox", "dash", "ksh", "zsh" ]
         include:
-          - { os: macos-11, test_shell: bash }
-          - { os: macos-11, test_shell: ksh }
-          - { os: macos-11, test_shell: zsh }
-          - { os: macos-12, test_shell: bash }
-          - { os: macos-12, test_shell: ksh }
-          - { os: macos-12, test_shell: zsh }
+          - { os: macos-14, test_shell: bash } # ARM
+          - { os: macos-14, test_shell: ksh }  # ARM
+          - { os: macos-14, test_shell: zsh }  # ARM
+          - { os: macos-12, test_shell: bash } # x86
+          - { os: macos-12, test_shell: ksh }  # x86
+          - { os: macos-12, test_shell: zsh }  # x86
     steps:
+    - name: "Show: GitHub context"
+      env:
+        GITHUB_CONTEXT: ${{ toJSON(github) }}
+      run: echo $GITHUB_CONTEXT
+
+
+    - name: "Show: environment variables"
+      run: env | sort
+
+
     - name: Git Checkout
-      uses: actions/checkout@v4 #https://github.com/actions/checkout
+      uses: actions/checkout@v4  # https://github.com/actions/checkout
+
 
     - name: Install ${{ matrix.test_shell }}
       run: |
@@ -74,14 +103,19 @@ jobs:
           sudo apt-get install -y bash parallel ${{ matrix.test_shell }}
         fi
 
+
     - name: Test with ${{ matrix.test_shell }}
       continue-on-error: ${{ runner.os == 'macOS' }} # too many random hangs 
       timeout-minutes: 2
       run: |
         bash tests/run-tests.sh ${{ matrix.test_shell }}
 
+
+    ##################################################
+    # Setup SSH debug session
+    ##################################################
     - name: "SSH session for debugging: check"
-      id: debug_ssh_sesssion_check
+      id: DEBUG_SSH_SESSSION_CHECK
       if: always()
       run: |
         set -eu
@@ -91,16 +125,19 @@ jobs:
         job_info=$(echo "$GITHUB_JOB ${{ toJSON(matrix) }}" | tr -d '\n')
         echo "job_info: $job_info"
 
-        if [[ "$job_info" =~ .*$job_filter_pattern.* ]] && case "${{ job.status }}" in
-           success)   [[ "${{ inputs.debug-with-ssh }}" == always ]] ;;
-           cancelled) [[ "${{ inputs.debug-with-ssh }}" == on_failure_or_cancelled ]] ;;
-           failure)   [[ "${{ inputs.debug-with-ssh }}" =~ on_failure.* ]] ;;
+        when="${{ inputs.debug-with-ssh }}"
+
+        if [[ $when == "always" ]] || [[ "$job_info" =~ .*$job_filter_pattern.* ]] && case "${{ job.status }}" in
+          success)   [[ $when == "always" ]] ;;
+          cancelled) [[ $when == "on_failure_or_cancelled" ]] ;;
+          failure)   [[ $when == "on_failure"* ]] ;;
         esac; then
-           echo "start_session=true" >>$GITHUB_OUTPUT;
+          echo "start_ssh_session=true" | tee -a "$GITHUB_OUTPUT"
         fi
 
+
     - name: "SSH session for debugging: start"
-      uses: mxschmitt/action-tmate@v3 # https://github.com/mxschmitt/action-tmate
-      if: always() && steps.debug_ssh_sesssion_check.outputs.start_session
+      uses: mxschmitt/action-tmate@v3  # https://github.com/mxschmitt/action-tmate
+      if: always() && steps.DEBUG_SSH_SESSSION_CHECK.outputs.start_ssh_session
       with:
         limit-access-to-actor: ${{ inputs.debug-with-ssh-only-for-actor }}

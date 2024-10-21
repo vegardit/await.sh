@@ -71,15 +71,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:  # https://github.com/actions/runner-images#available-images
-        os:         [ "ubuntu-20.04", "ubuntu-22.04" ]
+        os:         [ "ubuntu-20.04", "ubuntu-22.04", "ubuntu-24.04" ]
         test_shell: [ "ash" , "bash", "busybox", "dash", "ksh", "zsh" ]
         include:
           - { os: macos-14, test_shell: bash } # ARM
           - { os: macos-14, test_shell: ksh }  # ARM
           - { os: macos-14, test_shell: zsh }  # ARM
-          - { os: macos-12, test_shell: bash } # x86
-          - { os: macos-12, test_shell: ksh }  # x86
-          - { os: macos-12, test_shell: zsh }  # x86
+          - { os: macos-13, test_shell: bash } # x86
+          - { os: macos-13, test_shell: ksh }  # x86
+          - { os: macos-13, test_shell: zsh }  # x86
     steps:
     - name: "Show: GitHub context"
       env:

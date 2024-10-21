@@ -98,7 +98,7 @@ jobs:
     - name: Install ${{ matrix.test_shell }}
       run: |
         if [[ "$OSTYPE" == "darwin"* ]]; then
-          brew install bash parallel ${{ matrix.test_shell }}
+          brew install bash parallel ${{ matrix.test_shell == 'ksh' && 'ksh93' || matrix.test_shell }}
         else
           sudo apt-get install -y bash parallel ${{ matrix.test_shell }}
         fi

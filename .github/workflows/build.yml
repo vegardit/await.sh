@@ -80,6 +80,9 @@ jobs:
         os:         [ "ubuntu-22.04", "ubuntu-24.04" ]
         test_shell: [ "ash" , "bash", "busybox", "dash", "ksh", "zsh" ]
         include:
+          - { os: macos-15, test_shell: bash } # ARM
+          - { os: macos-15, test_shell: ksh }  # ARM
+          - { os: macos-15, test_shell: zsh }  # ARM
           - { os: macos-14, test_shell: bash } # ARM
           - { os: macos-14, test_shell: ksh }  # ARM
           - { os: macos-14, test_shell: zsh }  # ARM

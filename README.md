@@ -3,7 +3,7 @@
 [![Build](https://github.com/vegardit/await.sh/actions/workflows/build.yml/badge.svg)](https://github.com/vegardit/await.sh/actions/workflows/build.yml)
 [![Build Status](https://vegardit.semaphoreci.com/badges/await.sh/branches/v1.svg?key=5e32845c-65e8-4773-b17a-481195abb88a  "Semaphore CI")](https://vegardit.semaphoreci.com/projects/await.sh)
 [![License](https://img.shields.io/github/license/vegardit/await.sh.svg?label=license)](#license)
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.1%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
 
 
 **Feedback and high-quality pull requests are highly welcome!**

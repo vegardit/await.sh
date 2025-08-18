@@ -3,20 +3,20 @@ _LOCAL/
 
 # Eclipse
 /.project
-/.settings
+/.settings/
 **/.*.md.html
 
 # IntelliJ
-.idea
-*.iml
-*.ipr
-*.iws
+/.idea
+/*.iml
+/*.ipr
+/*.iws
 
 # Eclipse Theia
-.theia
+/.theia
 
 # Visual Studio Code
-.vscode
+/.vscode
 
 # OSX
 .DS_Store
@@ -28,6 +28,9 @@ _LOCAL/
 # patch
 *.orig
 *.rej
+
+# nektos/act
+.actrc
 
 # Temp files
 .history

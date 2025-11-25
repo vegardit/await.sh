@@ -3,10 +3,10 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-ArtifactOfProjectHomePage: https://github.com/vegardit/await.sh
 #
-# https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
+# https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax
 name: Build
 
-on:  # https://docs.github.com/en/actions/reference/events-that-trigger-workflows
+on:  # https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows
   push:
     branches-ignore:  # build all branches except:
     - 'dependabot/**'  # prevent GHA triggered twice (once for commit to the branch and once for opening/syncing the PR)
@@ -34,15 +34,15 @@ on:  # https://docs.github.com/en/actions/reference/events-that-trigger-workflow
     - '.github/workflows/stale.yml'
     - '.semaphore/**/*'
   workflow_dispatch:
-    # https://docs.github.com/en/actions/reference/events-that-trigger-workflows#workflow_dispatch
+    # https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#workflow_dispatch
     inputs:
       debug-with-ssh:
-        description: "Start an SSH session for debugging purposes at the end of the build:"
+        description: "When to open an SSH session for post-build debugging:"
         default: never
         type: choice
         options: [ always, on_failure, on_failure_or_cancelled, never ]
       debug-with-ssh-only-for-actor:
-        description: "Limit access to the SSH session to the GitHub user that triggered the job."
+        description: "Restrict SSH debug session access to the GitHub user who triggered the workflow"
         default: true
         type: boolean
       debug-with-ssh-only-jobs-matching:
@@ -83,12 +83,12 @@ jobs:
           - { os: macos-15, test_shell: bash } # ARM
           - { os: macos-15, test_shell: ksh }  # ARM
           - { os: macos-15, test_shell: zsh }  # ARM
+          - { os: macos-15-intel, test_shell: bash } # x86
+          - { os: macos-15-intel, test_shell: ksh }  # x86
+          - { os: macos-15-intel, test_shell: zsh }  # x86
           - { os: macos-14, test_shell: bash } # ARM
           - { os: macos-14, test_shell: ksh }  # ARM
           - { os: macos-14, test_shell: zsh }  # ARM
-          - { os: macos-13, test_shell: bash } # x86
-          - { os: macos-13, test_shell: ksh }  # x86
-          - { os: macos-13, test_shell: zsh }  # x86
     steps:
     - name: "Show: GitHub context"
       env:
@@ -101,7 +101,7 @@ jobs:
 
 
     - name: Git Checkout
-      uses: actions/checkout@v5  # https://github.com/actions/checkout
+      uses: actions/checkout@v6  # https://github.com/actions/checkout
 
 
     - name: Install ${{ matrix.test_shell }}

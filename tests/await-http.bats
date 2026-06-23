@@ -148,8 +148,11 @@ function assert_exitcode() {
 
 
 @test "${TEST_SHELL:-sh}: Test one of multiple URLs is unavailable" {
-  assert_exitcode $RC_TIMED_OUT 5 http://google.com http://google.com:84 -- echo UP
+  assert_exitcode $RC_TIMED_OUT 5 http://google.com http://google.com:84 -- echo AWAIT_SH_FOLLOWUP_COMMAND_RAN
 
-  refute_regex "$output" 'UP'
+  refute_regex "$output" 'AWAIT_SH_FOLLOWUP_COMMAND_RAN'
+  refute_regex "$output" 'executing \[.*http://google\.com http://google\.com:84\]'
+  assert_regex "$output" 'http://google\.com\]...OK'
+  assert_regex "$output" 'http://google\.com:84\]...ERROR'
   assert_regex "$output" 'ERROR:.*did not get ready within required time'
 }

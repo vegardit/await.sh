@@ -217,7 +217,14 @@ while true; do
   no_errors=true
   last_error_msg=
   last_error_target=
-  for target in $targets; do
+  remaining_targets=$targets
+  while [ -n "$remaining_targets" ]; do
+    # zsh does not split unquoted scalar expansions, so split the target list explicitly.
+    case $remaining_targets in
+      *" "*) target=${remaining_targets%% *}; remaining_targets=${remaining_targets#* } ;;
+      *)     target=$remaining_targets; remaining_targets= ;;
+    esac
+
     printf "=> executing [$timeout_cmd $http_get $target]..."
     set +e
     # shellcheck disable=SC2086

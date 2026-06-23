@@ -77,9 +77,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:  # https://github.com/actions/runner-images#available-images
-        os:         [ "ubuntu-22.04", "ubuntu-24.04" ]
+        os:         [ "ubuntu-22.04", "ubuntu-22.04-arm", "ubuntu-24.04", "ubuntu-24.04-arm", "ubuntu-26.04", "ubuntu-26.04-arm" ]
         test_shell: [ "ash" , "bash", "busybox", "dash", "ksh", "zsh" ]
+        exclude:
+          - { os: ubuntu-26.04, test_shell: ash }
+          - { os: ubuntu-26.04-arm, test_shell: ash }
         include:
+          - { os: macos-26, test_shell: bash } # ARM
+          - { os: macos-26, test_shell: ksh }  # ARM
+          - { os: macos-26, test_shell: zsh }  # ARM
+          - { os: macos-26-intel, test_shell: bash } # x86
+          - { os: macos-26-intel, test_shell: ksh }  # x86
+          - { os: macos-26-intel, test_shell: zsh }  # x86
           - { os: macos-15, test_shell: bash } # ARM
           - { os: macos-15, test_shell: ksh }  # ARM
           - { os: macos-15, test_shell: zsh }  # ARM
